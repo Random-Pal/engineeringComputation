@@ -1,0 +1,11 @@
+import numpy as np
+arr = np.linspace(1,10,num = 10, endpoint = True)
+mean = arr.mean()
+min = arr.min()
+max = arr.max()
+std = arr.std()
+print(arr)
+print("Mean: ", mean)
+print("Max: ", max)
+print("Min: ", min)
+print("STD: ", std)
