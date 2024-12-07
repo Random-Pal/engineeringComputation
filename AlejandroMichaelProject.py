@@ -27,6 +27,7 @@ app.layout = html.Div([
     dcc.Graph(
         id='sunburst-plot',
         style={'height':'600px'}
+
     )
 
     ]
