@@ -24,6 +24,14 @@ app.layout = html.Div([
     dcc.Graph(id='graph'),
     dcc.Graph(id='bar-chart',figure=px.bar(df, x='brand', y='price', title ='Sample Bar Chart')),
     dcc.Graph(id='scatter-plot',figure=px.scatter(df, x='year', y='price', title ='Sample Scatter Plot')),
+
+    dcc.Dropdown(
+      id='brand-dropdown',
+      options=[
+          {'label': brands, 'value': brands} for brands
+      ],
+    ),
+
     dcc.Graph(
         id='sunburst-plot',
         style={'height':'600px'}
