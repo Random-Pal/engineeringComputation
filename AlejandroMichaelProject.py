@@ -11,7 +11,7 @@ df = pd.read_csv('USA_cars_datasets.csv')
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
-    html.H1('Simple Dashboard'),
+    html.H1('Simple Dashboard', style={'color':'#f54842','text-align': 'center', 'padding-top': '30px'}),
 
     html.Label("Select Column: "),
     dcc.Dropdown(
@@ -24,6 +24,10 @@ app.layout = html.Div([
     dcc.Graph(id='graph'),
     dcc.Graph(id='bar-chart',figure=px.bar(df, x='brand', y='price', title ='Sample Bar Chart')),
     dcc.Graph(id='scatter-plot',figure=px.scatter(df, x='year', y='price', title ='Sample Scatter Plot')),
+    dcc.Graph(
+        id='sunburst-plot',
+        style={'height':'600px'}
+    )
 
     ]
 
