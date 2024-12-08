@@ -10,27 +10,27 @@ df = pd.read_csv('USA_cars_datasets.csv')
 
 brands = df['brand'].unique() #will be used later for graphs, get unique values of all cars ignoring duplicates.
 modifiedDf = df.drop(columns = ['Unnamed: 0']) #getting rid of 1st column since there's no header and just numbers
-#dfMilesYears = modifiedDf.groupby(['mileage','years'])
+dfMilesYears = modifiedDf.groupby(['mileage','price'])['year']
 
-brand_of_car = modifiedDf.groupby('brand')['model'].count().reset_index().sort_values('model',ascending= False)
+brand_of_car = modifiedDf.groupby('brand')['model'].count().reset_index().sort_values('model',ascending= False).head(10)
 brand_of_car = brand_of_car.rename(columns = {'model':'count'})
 
 app = dash.Dash(__name__)
 app.layout = html.Div([
-    html.H1('Simple Dashboard', style={'color':'#f54842','text-align': 'center', 'padding-top': '30px'}),
+    html.H1('US Used Car data', style={'color':'#f54842','text-align': 'center', 'padding-top': '30px'}),
 
     html.Label("Select Column: "),
     dcc.Dropdown(
         id='column-dropdown',
-        options = [{'label':col,'value':col} for col in df.columns],
-        value='Column_A',
+        options = [{'label':col,'value':col} for col in ['mileage', 'price']],
+        value='price',
         ##placeholder="please select an option",
         style={'width':'50%'}
     ),
 
-    dcc.Graph(id='graph'),
-    dcc.Graph(id='bar-chart',figure=px.bar(df, x='brand', title ='Sample Bar Chart')),
-    dcc.Graph(id='scatter-plot',figure=px.scatter(df, x='year', y='price', title ='Sample Scatter Plot')),
+    dcc.Graph(id='bubble-chart'),
+    dcc.Graph(id='bar-chart',figure=px.bar(brand_of_car, x='brand',y='count', color='count', title ='Top 10 brands by %')),
+    dcc.Graph(id='scatter-plot',figure=px.scatter(df, x='year', y='price', title ='Price vs Year')),
 
     #*dcc.Dropdown(
     #  id='brand-dropdown',
@@ -52,28 +52,37 @@ app.layout = html.Div([
     dcc.Graph(id='pie-chart',figure=px.pie(brand_of_car,values = 'count', names = 'brand', title = 'Brands sold by percentage')),
 
 
-
     ]
 
 )
 
 @app.callback(
-    Output('graph', 'figure'),
+    Output('bubble-chart', 'figure'),
     [Input('column-dropdown', 'value')],
 
 )
 
 def update_chart(selected_column): #changed from line chart to bubble, line stopped working for some reason anyway.
-    figure = {
-        'data': [
-            {'x': df['year'], 'y': df[selected_column], 'type': 'line', 'name': selected_column}
-        ],
-        'layout': {
-            'title': f'{selected_column} Measurements',
-            'xaxis': {'title': 'Years'},
-            'yaxis': {'title': selected_column},
-        }
-    }
+    figure = px.scatter(
+        modifiedDf,
+        x= 'year',
+        y= selected_column,
+        size = selected_column,
+        color = selected_column,
+    )
+    # figure = {
+    #     # 'data': [
+    #     #     {px.scatter('x': df['year'], 'y': df[selected_column], size = 'size', color = 'red' )}
+    #     # ],
+    #     # 'data': [
+    #     #     {'x': df['year'], 'y': df[selected_column], 'type': 'line', 'name': selected_column}
+    #     # ],
+    #     # 'layout': {
+    #     #     'title': f'{selected_column} Measurements',
+    #     #     'xaxis': {'title': 'Years'},
+    #     #     'yaxis': {'title': selected_column},
+    #     # }
+    # }
 
     return figure
 
