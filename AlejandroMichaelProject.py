@@ -8,7 +8,12 @@ import numpy as np
 
 df = pd.read_csv('USA_cars_datasets.csv')
 
-#brands = df['brand'].unique()
+brands = df['brand'].unique() #will be used later for graphs, get unique values of all cars ignoring duplicates.
+modifiedDf = df.drop(columns = ['Unnamed: 0']) #getting rid of 1st column since there's no header and just numbers
+#dfMilesYears = modifiedDf.groupby(['mileage','years'])
+
+brand_of_car = modifiedDf.groupby('brand')['model'].count().reset_index().sort_values('model',ascending= False)
+brand_of_car = brand_of_car.rename(columns = {'model':'count'})
 
 app = dash.Dash(__name__)
 app.layout = html.Div([
@@ -24,7 +29,7 @@ app.layout = html.Div([
     ),
 
     dcc.Graph(id='graph'),
-    dcc.Graph(id='bar-chart',figure=px.bar(df, x='brand', y='price', title ='Sample Bar Chart')),
+    dcc.Graph(id='bar-chart',figure=px.bar(df, x='brand', title ='Sample Bar Chart')),
     dcc.Graph(id='scatter-plot',figure=px.scatter(df, x='year', y='price', title ='Sample Scatter Plot')),
 
     #*dcc.Dropdown(
@@ -44,7 +49,7 @@ app.layout = html.Div([
     # html.Button("Change Brand", id="change-brand-btn", n_clicks=0, style={'margin': '20px'}),
     # html.Div(id="selected-brand", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '20px'})
 
-    dcc.Graph(id='pie-chart',figure=px.pie(df,values = 'price', names = 'brand', title = 'Brands sold by percentage')),
+    dcc.Graph(id='pie-chart',figure=px.pie(brand_of_car,values = 'count', names = 'brand', title = 'Brands sold by percentage')),
 
 
 
@@ -58,7 +63,7 @@ app.layout = html.Div([
 
 )
 
-def update_chart(selected_column):
+def update_chart(selected_column): #changed from line chart to bubble, line stopped working for some reason anyway.
     figure = {
         'data': [
             {'x': df['year'], 'y': df[selected_column], 'type': 'line', 'name': selected_column}
